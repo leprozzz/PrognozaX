@@ -1,0 +1,122 @@
+[
+  {
+    "id": "banja-luka",
+    "name": "Banja Luka",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.7722,
+    "longitude": 17.1910,
+    "csvPath": "/data/csv/banja-luka.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "13242"
+  },
+  {
+    "id": "sarajevo",
+    "name": "Sarajevo",
+    "country": "Bosna i Hercegovina",
+    "latitude": 43.8563,
+    "longitude": 18.4131,
+    "csvPath": "/data/csv/sarajevo.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "14654"
+  },
+  {
+    "id": "mostar",
+    "name": "Mostar",
+    "country": "Bosna i Hercegovina",
+    "latitude": 43.3438,
+    "longitude": 17.8078,
+    "csvPath": "/data/csv/mostar.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "13348"
+  },
+  {
+    "id": "tuzla",
+    "name": "Tuzla",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.5384,
+    "longitude": 18.6671,
+    "csvPath": "/data/csv/tuzla.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "13257"
+  },
+  {
+    "id": "zenica",
+    "name": "Zenica",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.2017,
+    "longitude": 17.9040,
+    "csvPath": "/data/csv/zenica.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "14549"
+  },
+  {
+    "id": "bijeljina",
+    "name": "Bijeljina",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.7587,
+    "longitude": 19.2144,
+    "csvPath": "/data/csv/bijeljina.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "13262"
+  },
+  {
+    "id": "prijedor",
+    "name": "Prijedor",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.9799,
+    "longitude": 16.7140,
+    "csvPath": "/data/csv/prijedor.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "14537"
+  },
+  {
+    "id": "trebinje",
+    "name": "Trebinje",
+    "country": "Bosna i Hercegovina",
+    "latitude": 42.7120,
+    "longitude": 18.3436,
+    "csvPath": "/data/csv/trebinje.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "14474"
+  },
+  {
+    "id": "doboj",
+    "name": "Doboj",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.73,
+    "longitude": 18.08,
+    "csvPath": "/data/csv/doboj.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "14554"
+  },
+  {
+    "id": "bihac",
+    "name": "Bihać",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.81,
+    "longitude": 15.86,
+    "csvPath": "/data/csv/bihac.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "14528"
+  },
+  {
+    "id": "beograd",
+    "name": "Beograd",
+    "country": "Srbija",
+    "latitude": 44.81,
+    "longitude": 20.46,
+    "csvPath": "/data/csv/beograd.csv",
+    "timezone": "Europe/Belgrade",
+    "meteostatId": "13274"
+  },
+  {
+    "id": "zagreb",
+    "name": "Zagreb",
+    "country": "Hrvatska",
+    "latitude": 45.81,
+    "longitude": 15.98,
+    "csvPath": "/data/csv/zagreb.csv",
+    "timezone": "Europe/Zagreb",
+    "meteostatId": "14236"
+  }
+]
