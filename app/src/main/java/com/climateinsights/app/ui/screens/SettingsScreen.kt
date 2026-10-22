@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Public
@@ -31,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -119,19 +122,121 @@ fun SettingsScreen(viewModel: MainViewModel) {
                     }
                 }
 
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Uvodni ekran (Welcome screen)",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Prikažite početni ekran sa vodičem i selekcijom podrazumijevanog grada",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        androidx.compose.material3.OutlinedButton(
+                            onClick = { viewModel.resetOnboarding() },
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text("Otvori")
+                        }
+                    }
+                }
+
+                var searchQuery by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+                var selectedCountryFilter by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+
+                val availableCountries = androidx.compose.runtime.remember(state.cities) {
+                    state.cities.map { it.country }.distinct()
+                }
+
+                val filteredCities = androidx.compose.runtime.remember(state.cities, searchQuery, selectedCountryFilter) {
+                    state.cities.filter { city ->
+                        val matchesCountry = selectedCountryFilter == null || city.country == selectedCountryFilter
+                        val matchesSearch = searchQuery.isBlank() ||
+                            city.name.contains(searchQuery.trim(), ignoreCase = true) ||
+                            city.country.contains(searchQuery.trim(), ignoreCase = true)
+                        matchesCountry && matchesSearch
+                    }
+                }
+
                 Text(
                     text = "Dostupni gradovi (${state.cities.size})",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
 
+                androidx.compose.material3.OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Pretraži grad...") },
+                    leadingIcon = {
+                        Icon(Icons.Default.LocationCity, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            androidx.compose.material3.IconButton(onClick = { searchQuery = "" }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Obriši")
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                androidx.compose.foundation.lazy.LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    item {
+                        androidx.compose.material3.FilterChip(
+                            selected = selectedCountryFilter == null,
+                            onClick = { selectedCountryFilter = null },
+                            label = { Text("Sve (${state.cities.size})") }
+                        )
+                    }
+                    items(availableCountries) { country ->
+                        val flag = when {
+                            country.contains("Bosna", ignoreCase = true) -> "🇧🇦"
+                            country.contains("Srbija", ignoreCase = true) -> "🇷🇸"
+                            country.contains("Hrvatska", ignoreCase = true) -> "🇭🇷"
+                            else -> "📍"
+                        }
+                        val count = state.cities.count { it.country == country }
+                        androidx.compose.material3.FilterChip(
+                            selected = selectedCountryFilter == country,
+                            onClick = { selectedCountryFilter = if (selectedCountryFilter == country) null else country },
+                            label = { Text("$flag $country ($count)") }
+                        )
+                    }
+                }
+
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(state.cities) { city ->
+                    items(filteredCities, key = { it.id }) { city ->
                         val isSelected = city.id == state.selectedCity.id
-                        val hasLocalCsv = city.id == "banja-luka"
+                        val flag = when {
+                            city.country.contains("Bosna", ignoreCase = true) -> "🇧🇦"
+                            city.country.contains("Srbija", ignoreCase = true) -> "🇷🇸"
+                            city.country.contains("Hrvatska", ignoreCase = true) -> "🇭🇷"
+                            else -> "📍"
+                        }
 
                         OutlinedCard(
                             modifier = Modifier
@@ -166,20 +271,20 @@ fun SettingsScreen(viewModel: MainViewModel) {
                                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                                         )
                                         Text(
-                                            text = city.country,
+                                            text = "$flag ${city.country}",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Surface(
-                                            color = if (hasLocalCsv) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                            color = MaterialTheme.colorScheme.secondaryContainer,
                                             shape = RoundedCornerShape(8.dp)
                                         ) {
                                             Text(
-                                                text = if (hasLocalCsv) "Istorijski podaci (CSV) + Uživo" else "Prognoza i trenutno uživo",
+                                                text = "1990–2026 istorijska baza + Uživo",
                                                 style = MaterialTheme.typography.labelSmall,
                                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                                color = if (hasLocalCsv) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                                                color = MaterialTheme.colorScheme.onSecondaryContainer
                                             )
                                         }
                                     }

@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Climate Insights"
+rootProject.name = "PrognozaX"
 include(":app")

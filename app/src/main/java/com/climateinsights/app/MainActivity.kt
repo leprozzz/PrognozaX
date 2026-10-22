@@ -16,6 +16,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.isSystemInDarkTheme
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.tween
+import com.climateinsights.app.ui.screens.WelcomeScreen
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +30,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: MainViewModel = viewModel()
             val isDarkTheme by viewModel.isDarkTheme.collectAsState()
+            val hasCompletedOnboarding by viewModel.hasCompletedOnboarding.collectAsState()
             val useDarkTheme = isDarkTheme ?: isSystemInDarkTheme()
             
             ClimateInsightsTheme(darkTheme = useDarkTheme) {
@@ -30,7 +38,20 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(viewModel)
+                    AnimatedContent(
+                        targetState = hasCompletedOnboarding,
+                        transitionSpec = {
+                            fadeIn(animationSpec = tween(350)) togetherWith
+                                fadeOut(animationSpec = tween(250))
+                        },
+                        label = "OnboardingTransition"
+                    ) { completed ->
+                        if (completed) {
+                            MainScreen(viewModel)
+                        } else {
+                            WelcomeScreen(viewModel)
+                        }
+                    }
                 }
             }
         }

@@ -1,6 +1,6 @@
 {
-  "name": "Climate Insights",
-  "description": "Historical climate data analysis and live weather integration for various cities.",
+  "name": "PrognozaX",
+  "description": "PrognozaX - vremenska prognoza, istorijski ekstremi i klimatska analitika",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

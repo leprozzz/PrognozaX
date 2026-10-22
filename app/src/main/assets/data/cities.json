@@ -118,5 +118,85 @@
     "csvPath": "/data/csv/zagreb.csv",
     "timezone": "Europe/Zagreb",
     "meteostatId": "14236"
+  },
+  {
+    "id": "brcko",
+    "name": "Brčko",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.87,
+    "longitude": 18.81,
+    "csvPath": "/data/csv/brcko.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "69171"
+  },
+  {
+    "id": "gradiska",
+    "name": "Gradiška (Bosanska Gradiška)",
+    "country": "Bosna i Hercegovina",
+    "latitude": 45.14,
+    "longitude": 17.25,
+    "csvPath": "/data/csv/gradiska.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "13242"
+  },
+  {
+    "id": "zvornik",
+    "name": "Zvornik",
+    "country": "Bosna i Hercegovina",
+    "latitude": 44.39,
+    "longitude": 19.10,
+    "csvPath": "/data/csv/zvornik.csv",
+    "timezone": "Europe/Sarajevo",
+    "meteostatId": "13262"
+  },
+  {
+    "id": "nis",
+    "name": "Niš",
+    "country": "Srbija",
+    "latitude": 43.3247,
+    "longitude": 21.9033,
+    "csvPath": "/data/csv/nis.csv",
+    "timezone": "Europe/Belgrade",
+    "meteostatId": "13388"
+  },
+  {
+    "id": "novi-sad",
+    "name": "Novi Sad",
+    "country": "Srbija",
+    "latitude": 45.2671,
+    "longitude": 19.8335,
+    "csvPath": "/data/csv/novi-sad.csv",
+    "timezone": "Europe/Belgrade",
+    "meteostatId": "13168"
+  },
+  {
+    "id": "split",
+    "name": "Split",
+    "country": "Hrvatska",
+    "latitude": 43.5081,
+    "longitude": 16.4402,
+    "csvPath": "/data/csv/split.csv",
+    "timezone": "Europe/Zagreb",
+    "meteostatId": "14445"
+  },
+  {
+    "id": "rijeka",
+    "name": "Rijeka",
+    "country": "Hrvatska",
+    "latitude": 45.3271,
+    "longitude": 14.4422,
+    "csvPath": "/data/csv/rijeka.csv",
+    "timezone": "Europe/Zagreb",
+    "meteostatId": "14303"
+  },
+  {
+    "id": "osijek",
+    "name": "Osijek",
+    "country": "Hrvatska",
+    "latitude": 45.5550,
+    "longitude": 18.6955,
+    "csvPath": "/data/csv/osijek.csv",
+    "timezone": "Europe/Zagreb",
+    "meteostatId": "14279"
   }
 ]

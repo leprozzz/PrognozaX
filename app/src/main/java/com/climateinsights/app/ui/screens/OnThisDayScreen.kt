@@ -77,6 +77,9 @@ import androidx.compose.ui.unit.sp
 import com.climateinsights.app.data.models.DailyRecord
 import com.climateinsights.app.data.models.ForecastDay
 import com.climateinsights.app.ui.viewmodels.MainUiState
+import androidx.compose.material.icons.filled.ArrowDropDown
+import com.climateinsights.app.ui.components.CitySelectionBottomSheet
+import com.climateinsights.app.ui.components.CitySelectorCard
 import com.climateinsights.app.ui.viewmodels.MainViewModel
 import java.time.Instant
 import java.time.LocalDate
@@ -99,6 +102,7 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     var isOptionsExpanded by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showCityPicker by remember { mutableStateOf(false) }
     var tableSortOrder by remember { mutableStateOf(TableSortOrder.TMAX_DESC) }
 
     when (val state = uiState) {
@@ -149,6 +153,15 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
             val recordsForDay = state.analysis?.historicalRecordsForDay ?: emptyList()
             val analysis = state.analysis
 
+            if (showCityPicker) {
+                CitySelectionBottomSheet(
+                    cities = state.cities,
+                    selectedCity = state.selectedCity,
+                    onCitySelected = { city -> viewModel.selectCity(city) },
+                    onDismissRequest = { showCityPicker = false }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -166,7 +179,7 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -175,14 +188,38 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             modifier = Modifier.weight(1f, fill = false)
                         ) {
-                            Icon(
-                                Icons.Default.LocationOn,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
-                            )
+                            Surface(
+                                onClick = { showCityPicker = true },
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.LocationOn,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        text = state.selectedCity.name,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Icon(
+                                        Icons.Default.ArrowDropDown,
+                                        contentDescription = "Promijeni grad",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
                             Text(
-                                text = "${state.selectedCity.name} • ${state.selectedDate.format(fullDateFormatter)}",
+                                text = "• ${state.selectedDate.format(fullDateFormatter)}",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -229,21 +266,15 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                         ) {
                             // Section A: City Switcher
                             Text(
-                                text = "Izaberi grad:",
+                                text = "Aktivni grad:",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
-                            LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                items(state.cities) { city ->
-                                    val isCitySelected = city.name == state.selectedCity.name
-                                    FilterChip(
-                                        selected = isCitySelected,
-                                        onClick = { viewModel.selectCity(city) },
-                                        label = { Text(city.name, style = MaterialTheme.typography.labelSmall) }
-                                    )
-                                }
-                            }
+                            CitySelectorCard(
+                                selectedCity = state.selectedCity,
+                                onClick = { showCityPicker = true }
+                            )
 
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
 
@@ -523,7 +554,8 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                         val isDaytimeToday = state.isToday && currentTime.isAfter(java.time.LocalTime.of(8, 0)) && currentTime.isBefore(java.time.LocalTime.of(22, 0))
                         
                         val comp = if (isDaytimeToday) analysis.tmaxComparison else analysis.tavgComparison
-                        val avgLabel = if (isDaytimeToday) "prosječnu MAX temperaturu" else "prosjek"
+                        val avgComparisonLabel = if (isDaytimeToday) "prosječnu maksimalnu dnevnu temperaturu" else "prosječnu dnevnu temperaturu"
+                        val avgStatLabel = if (isDaytimeToday) "Prosječna maksimalna dnevna temperatura za ovaj dan:" else "Prosječna dnevna temperatura za ovaj dan:"
 
                         comp?.let { comparison ->
                             val delta = comparison.deltaFromAverage
@@ -555,13 +587,13 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                                     Column {
                                         val prefix = if (delta >= 0) "+" else ""
                                         Text(
-                                            text = "$prefix${String.format(Locale.US, "%.1f", delta)}°C u odnosu na $avgLabel",
+                                            text = "$prefix${String.format(Locale.US, "%.1f", delta)}°C u odnosu na $avgComparisonLabel",
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
                                             color = deltaColor
                                         )
                                         Text(
-                                            text = "Istorijski $avgLabel ovog datuma: ${String.format(Locale.US, "%.1f", comparison.historicalAverage)}°C (kroz ${formatGodina(recordsForDay.size)})",
+                                            text = "$avgStatLabel ${String.format(Locale.US, "%.1f", comparison.historicalAverage)}°C (kroz ${formatGodina(recordsForDay.size)})",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -607,7 +639,7 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                                     }
                                     analysis.tmaxComparison?.allTimeMin?.let { min ->
                                         MetricBox(
-                                            title = "Najhladniji dan\n(Najniži max T)",
+                                            title = "Najhladniji dan\n(Najniža dnevna T)",
                                             value = "${String.format(Locale.US, "%.1f", min.value)}°C",
                                             subtitle = "Godina: ${min.year}.",
                                             color = Color(0xFF0288D1),

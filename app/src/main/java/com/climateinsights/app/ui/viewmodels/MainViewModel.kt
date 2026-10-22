@@ -1,6 +1,7 @@
 package com.climateinsights.app.ui.viewmodels
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.climateinsights.app.data.models.City
@@ -63,7 +64,13 @@ sealed class MainUiState {
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = WeatherRepository(application)
-    
+    private val prefs = application.getSharedPreferences("climate_insights_prefs", Context.MODE_PRIVATE)
+
+    private val _hasCompletedOnboarding = MutableStateFlow(
+        prefs.getBoolean("has_completed_onboarding", false)
+    )
+    val hasCompletedOnboarding: StateFlow<Boolean> = _hasCompletedOnboarding.asStateFlow()
+
     private val _isDarkTheme = MutableStateFlow<Boolean?>(null)
     val isDarkTheme: StateFlow<Boolean?> = _isDarkTheme.asStateFlow()
 
@@ -79,7 +86,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 cities = repository.getCities()
-                selectedCity = cities.firstOrNull()
+                val savedCityId = prefs.getString("default_city_id", null)
+                selectedCity = cities.find { it.id == savedCityId } ?: cities.firstOrNull()
                 if (selectedCity != null) {
                     loadData()
                 } else {
@@ -91,8 +99,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun completeOnboarding(city: City) {
+        selectedCity = city
+        prefs.edit()
+            .putBoolean("has_completed_onboarding", true)
+            .putString("default_city_id", city.id)
+            .apply()
+        _hasCompletedOnboarding.value = true
+        viewModelScope.launch {
+            loadData()
+        }
+    }
+
+    fun resetOnboarding() {
+        prefs.edit()
+            .putBoolean("has_completed_onboarding", false)
+            .apply()
+        _hasCompletedOnboarding.value = false
+    }
+
     fun selectCity(city: City) {
         selectedCity = city
+        prefs.edit()
+            .putString("default_city_id", city.id)
+            .apply()
         viewModelScope.launch {
             loadData()
         }

@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,6 +52,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.climateinsights.app.data.models.DailyRecord
+import com.climateinsights.app.ui.components.CitySelectionBottomSheet
+import com.climateinsights.app.ui.components.CitySelectorCard
 import com.climateinsights.app.ui.utils.formatGodina
 import com.climateinsights.app.ui.viewmodels.MainUiState
 import com.climateinsights.app.ui.viewmodels.MainViewModel
@@ -82,6 +85,17 @@ fun MonthlyScreen(viewModel: MainViewModel) {
                 "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"
             )
 
+            var showCityPicker by remember { mutableStateOf(false) }
+
+            if (showCityPicker) {
+                CitySelectionBottomSheet(
+                    cities = state.cities,
+                    selectedCity = state.selectedCity,
+                    onCitySelected = { city -> viewModel.selectCity(city) },
+                    onDismissRequest = { showCityPicker = false }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -90,51 +104,10 @@ fun MonthlyScreen(viewModel: MainViewModel) {
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 // Top City Switcher
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Icon(
-                                    Icons.Default.LocationOn,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Text(
-                                    text = "Grad: ${state.selectedCity.name}",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-
-                            if (state.isSyncing) {
-                                CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-                            }
-                        }
-
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            items(state.cities) { city ->
-                                val isCitySelected = city.name == state.selectedCity.name
-                                FilterChip(
-                                    selected = isCitySelected,
-                                    onClick = { viewModel.selectCity(city) },
-                                    label = { Text(city.name, style = MaterialTheme.typography.labelSmall) }
-                                )
-                            }
-                        }
-                    }
-                }
+                CitySelectorCard(
+                    selectedCity = state.selectedCity,
+                    onClick = { showCityPicker = true }
+                )
 
                 // Month Selector
                 Card(

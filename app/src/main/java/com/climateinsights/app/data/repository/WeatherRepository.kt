@@ -76,7 +76,15 @@ class WeatherRepository(private val context: Context) {
             City("doboj", "Doboj", "Bosna i Hercegovina", 44.73, 18.08, "/data/csv/doboj.csv", "Europe/Sarajevo", "14554"),
             City("bihac", "Bihać", "Bosna i Hercegovina", 44.81, 15.86, "/data/csv/bihac.csv", "Europe/Sarajevo", "14528"),
             City("beograd", "Beograd", "Srbija", 44.81, 20.46, "/data/csv/beograd.csv", "Europe/Belgrade", "13274"),
-            City("zagreb", "Zagreb", "Hrvatska", 45.81, 15.98, "/data/csv/zagreb.csv", "Europe/Zagreb", "14236")
+            City("zagreb", "Zagreb", "Hrvatska", 45.81, 15.98, "/data/csv/zagreb.csv", "Europe/Zagreb", "14236"),
+            City("brcko", "Brčko", "Bosna i Hercegovina", 44.87, 18.81, "/data/csv/brcko.csv", "Europe/Sarajevo", "69171"),
+            City("gradiska", "Gradiška (Bosanska Gradiška)", "Bosna i Hercegovina", 45.14, 17.25, "/data/csv/gradiska.csv", "Europe/Sarajevo", "13242"),
+            City("zvornik", "Zvornik", "Bosna i Hercegovina", 44.39, 19.10, "/data/csv/zvornik.csv", "Europe/Sarajevo", "13262"),
+            City("nis", "Niš", "Srbija", 43.3247, 21.9033, "/data/csv/nis.csv", "Europe/Belgrade", "13388"),
+            City("novi-sad", "Novi Sad", "Srbija", 45.2671, 19.8335, "/data/csv/novi-sad.csv", "Europe/Belgrade", "13168"),
+            City("split", "Split", "Hrvatska", 43.5081, 16.4402, "/data/csv/split.csv", "Europe/Zagreb", "14445"),
+            City("rijeka", "Rijeka", "Hrvatska", 45.3271, 14.4422, "/data/csv/rijeka.csv", "Europe/Zagreb", "14303"),
+            City("osijek", "Osijek", "Hrvatska", 45.5550, 18.6955, "/data/csv/osijek.csv", "Europe/Zagreb", "14279")
         )
         citiesCache = defaultCities
         defaultCities

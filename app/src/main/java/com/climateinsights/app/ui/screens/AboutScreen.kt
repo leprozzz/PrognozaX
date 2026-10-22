@@ -59,7 +59,7 @@ fun AboutScreen() {
                     )
                 }
                 Text(
-                    text = "Climate Insights v1.0",
+                    text = "PrognozaX v1.0.0",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -69,12 +69,12 @@ fun AboutScreen() {
         OutlinedCard(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Šta je Climate Insights?",
+                    text = "Šta je PrognozaX?",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Climate Insights je moderna Android aplikacija razvijena u Jetpack Compose-u namijenjena praćenju, analizi i vizuelizaciji klimatskih podataka.",
+                    text = "PrognozaX je moderna Android aplikacija razvijena u Jetpack Compose-u namijenjena praćenju, analizi i vizuelizaciji vremenskih i klimatskih podataka.",
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
@@ -117,7 +117,7 @@ fun AboutScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Napomena: Podaci za Banja Luku sadrže detaljnu arhivu mjerenja (CSV). Za ostale gradove dostupni su podaci uživo i vremenska prognoza.",
+            text = "Baza obuhvata 15 gradova sa višedecenijskom arhivom mjerenja (1990–2026, Sarajevo od 1901), kao i meteorološke podatke uživo i 7-dnevnu vremensku prognozu.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

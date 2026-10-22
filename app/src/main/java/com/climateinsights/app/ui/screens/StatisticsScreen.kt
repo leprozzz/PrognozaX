@@ -2,6 +2,7 @@ package com.climateinsights.app.ui.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.CompareArrows
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.TableChart
@@ -126,6 +128,7 @@ fun StatisticsScreen(viewModel: MainViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedTab by remember { mutableStateOf(StatsTab.SEASONAL) }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showCityPicker by remember { mutableStateOf(false) }
 
     when (val state = uiState) {
         is MainUiState.Loading -> {
@@ -142,6 +145,15 @@ fun StatisticsScreen(viewModel: MainViewModel) {
             val recordsForDay = state.analysis?.historicalRecordsForDay ?: emptyList()
             val allRecords = state.allHistoricalRecords
             val dayMonthFormatter = DateTimeFormatter.ofPattern("d. MMMM", Locale("sr", "BA"))
+
+            if (showCityPicker) {
+                com.climateinsights.app.ui.components.CitySelectionBottomSheet(
+                    cities = state.cities,
+                    selectedCity = state.selectedCity,
+                    onCitySelected = { city -> viewModel.selectCity(city) },
+                    onDismissRequest = { showCityPicker = false }
+                )
+            }
 
             Column(
                 modifier = Modifier
@@ -163,19 +175,37 @@ fun StatisticsScreen(viewModel: MainViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { showCityPicker = true }
+                        ) {
                             Text(
                                 text = "Klimatska statistika",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
-                            Text(
-                                text = "${state.selectedCity.name} • Datum: ${state.selectedDate.format(dayMonthFormatter)}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = "${state.selectedCity.name} ▾",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "• Datum: ${state.selectedDate.format(dayMonthFormatter)}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(onClick = { showCityPicker = true }) {
+                                Icon(Icons.Default.LocationCity, contentDescription = "Promijeni grad", tint = MaterialTheme.colorScheme.primary)
+                            }
                             IconButton(
                                 onClick = { viewModel.syncCurrentCityData() },
                                 enabled = !state.isSyncing
