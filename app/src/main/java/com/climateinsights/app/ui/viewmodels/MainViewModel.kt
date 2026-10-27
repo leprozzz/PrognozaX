@@ -64,7 +64,7 @@ sealed class MainUiState {
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = WeatherRepository(application)
-    private val prefs = application.getSharedPreferences("climate_insights_prefs", Context.MODE_PRIVATE)
+    private val prefs = application.getSharedPreferences("prognozax_prefs", Context.MODE_PRIVATE)
 
     private val _hasCompletedOnboarding = MutableStateFlow(
         prefs.getBoolean("has_completed_onboarding", false)

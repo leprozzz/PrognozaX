@@ -169,7 +169,7 @@ fun WelcomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Dobrodošli u Klimatski Uvid",
+                            text = "PrognozaX - klimatski uvid",
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -179,7 +179,7 @@ fun WelcomeScreen(
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Text(
-                            text = "Vaš prozor u 36 godina meteorološke istorije i trenutne vremenske prilike",
+                            text = "Pregled 36 godina istorije vremenskih prilika i klimatskih promijena",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -188,7 +188,7 @@ fun WelcomeScreen(
 
                         Spacer(modifier = Modifier.height(28.dp))
 
-                        // Section 1: Default City Selection
+                        // Section 1: City Selection
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -206,97 +206,12 @@ fun WelcomeScreen(
                                     .padding(20.dp),
                                 verticalArrangement = Arrangement.spacedBy(14.dp)
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Surface(
-                                        shape = RoundedCornerShape(10.dp),
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(36.dp)
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Icon(
-                                                imageVector = Icons.Default.LocationCity,
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.onPrimary,
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        }
-                                    }
-                                    Column {
-                                        Text(
-                                            text = "Odaberite podrazumijevani grad",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        Text(
-                                            text = "Grad za koji želite pratiti trenutno vrijeme i istoriju",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-
-                                // Interactive City Card Button
+                                // Interactive City Card Button (prikaz odabranog grada i gumb Promijeni)
                                 CitySelectorCard(
                                     selectedCity = selectedCity,
                                     onClick = { showCitySheet = true },
                                     modifier = Modifier.testTag("welcome_city_selector")
                                 )
-
-                                // Quick suggestion chips (Popular regional cities)
-                                Text(
-                                    text = "Brzi odabir popularnih gradova:",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-
-                                val suggestedCities = remember(state.cities) {
-                                    val popularNames = listOf(
-                                        "Banja Luka", "Sarajevo", "Beograd", "Zagreb",
-                                        "Niš", "Novi Sad", "Split", "Mostar", "Rijeka"
-                                    )
-                                    state.cities.filter { it.name in popularNames }
-                                }
-
-                                FlowRow(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    suggestedCities.forEach { city ->
-                                        val isChosen = city.id == selectedCity.id
-                                        val flag = when {
-                                            city.country.contains("Bosna", ignoreCase = true) -> "🇧🇦"
-                                            city.country.contains("Srbija", ignoreCase = true) -> "🇷🇸"
-                                            city.country.contains("Hrvatska", ignoreCase = true) -> "🇭🇷"
-                                            else -> "📍"
-                                        }
-
-                                        FilterChip(
-                                            selected = isChosen,
-                                            onClick = { selectedCity = city },
-                                            label = { Text("$flag ${city.name}") },
-                                            leadingIcon = if (isChosen) {
-                                                {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Check,
-                                                        contentDescription = null,
-                                                        modifier = Modifier.size(16.dp)
-                                                    )
-                                                }
-                                            } else null,
-                                            colors = FilterChipDefaults.filterChipColors(
-                                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                                                selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
-                                            )
-                                        )
-                                    }
-                                }
 
                                 OutlinedButton(
                                     onClick = { showCitySheet = true },

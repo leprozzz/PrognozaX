@@ -1,5 +1,6 @@
 package com.climateinsights.app.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -85,9 +86,10 @@ import com.climateinsights.app.ui.viewmodels.MainViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 import com.climateinsights.app.ui.utils.formatGodina
+import com.climateinsights.app.ui.utils.formatDanMjesec
+import com.climateinsights.app.ui.utils.formatPuniDatum
 
 enum class StatsTab(val label: String, val icon: ImageVector) {
     SEASONAL("Klimatski indeksi", Icons.Default.LocalFireDepartment),
@@ -144,7 +146,6 @@ fun StatisticsScreen(viewModel: MainViewModel) {
         is MainUiState.Success -> {
             val recordsForDay = state.analysis?.historicalRecordsForDay ?: emptyList()
             val allRecords = state.allHistoricalRecords
-            val dayMonthFormatter = DateTimeFormatter.ofPattern("d. MMMM", Locale("sr", "BA"))
 
             if (showCityPicker) {
                 com.climateinsights.app.ui.components.CitySelectionBottomSheet(
@@ -196,7 +197,7 @@ fun StatisticsScreen(viewModel: MainViewModel) {
                                     color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = "• Datum: ${state.selectedDate.format(dayMonthFormatter)}",
+                                    text = "• Datum: ${formatDanMjesec(state.selectedDate)}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -258,7 +259,7 @@ fun StatisticsScreen(viewModel: MainViewModel) {
                             ResponsiveChartSection(recordsForDay, state.selectedDate)
                         }
                         StatsTab.OVERVIEW -> {
-                            OverviewSection(state, recordsForDay)
+                            OverviewSection(state, allRecords)
                         }
                     }
                 } else {
@@ -529,33 +530,100 @@ fun RecordHighlightCard(
 }
 
 // -------------------------------------------------------------------------------------------------
-// 3. OVERVIEW SECTION (OVA GODINA VS ISTORIJA)
+// 3. OVERVIEW SECTION (OVA GODINA - POREĐENJE GODIŠNJEG PROSJEKA TEMPERATURE)
 // -------------------------------------------------------------------------------------------------
+data class YearAgg(
+    val year: Int,
+    val avgT: Double,
+    val avgTmax: Double,
+    val avgTmin: Double,
+    val totalPrcp: Double,
+    val maxT: Double,
+    val minT: Double,
+    val count: Int
+)
+
 @Composable
-fun OverviewSection(state: MainUiState.Success, records: List<DailyRecord>) {
-    val analysis = state.analysis ?: return
-    val yearToday = LocalDate.now().year
+fun OverviewSection(state: MainUiState.Success, allRecords: List<DailyRecord>) {
+    val currentYear = state.selectedDate.year
+    val dayOfYear = state.selectedDate.dayOfYear
 
-    val thisYearRecord = records.find { it.date.startsWith(yearToday.toString()) }
-    val thisYearTavg = if (state.isToday) state.liveSnapshot?.current else thisYearRecord?.tavg
-    val thisYearTmax = if (state.isToday) state.liveSnapshot?.todayMax else thisYearRecord?.tmax
-    val thisYearTmin = if (state.isToday) state.liveSnapshot?.todayMin else thisYearRecord?.tmin
-    val thisYearPrcp = if (state.isToday) state.liveSnapshot?.precipitation else thisYearRecord?.prcp
+    // 1. Agregacija za svaku godinu
+    val yearlyStats = remember(allRecords) {
+        allRecords
+            .groupBy { it.date.take(4).toIntOrNull() ?: 0 }
+            .filter { (yr, list) -> yr in 1990..2026 && list.any { it.tavg != null } }
+            .mapValues { (yr, list) ->
+                val tavgList = list.mapNotNull { it.tavg }
+                val tmaxList = list.mapNotNull { it.tmax }
+                val tminList = list.mapNotNull { it.tmin }
+                val prcpList = list.mapNotNull { it.prcp }
+                YearAgg(
+                    year = yr,
+                    avgT = if (tavgList.isNotEmpty()) tavgList.average() else 0.0,
+                    avgTmax = if (tmaxList.isNotEmpty()) tmaxList.average() else 0.0,
+                    avgTmin = if (tminList.isNotEmpty()) tminList.average() else 0.0,
+                    totalPrcp = prcpList.sum(),
+                    maxT = tmaxList.maxOrNull() ?: 0.0,
+                    minT = tminList.minOrNull() ?: 0.0,
+                    count = tavgList.size
+                )
+            }
+    }
 
-    val histTavg = analysis.historicalAvgTemp ?: 0.0
-    val allTmax = records.mapNotNull { it.tmax }
-    val allTmin = records.mapNotNull { it.tmin }
+    // Istorijske kompletne godine (prethodne godine pre ove)
+    val pastCompletedYears = remember(yearlyStats, currentYear) {
+        yearlyStats.filter { (yr, stat) -> yr < currentYear && stat.count >= 200 }
+    }
 
-    val allTimeMaxT = allTmax.maxOrNull() ?: 0.0
-    val allTimeMinT = allTmin.minOrNull() ?: 0.0
+    // Višegodišnji godišnji prosjeci
+    val histAnnualAvgTemp = remember(pastCompletedYears) {
+        pastCompletedYears.values.map { it.avgT }.average().takeIf { !it.isNaN() } ?: 11.5
+    }
+    val histAnnualAvgTmax = remember(pastCompletedYears) {
+        pastCompletedYears.values.map { it.avgTmax }.average().takeIf { !it.isNaN() } ?: 16.5
+    }
+    val histAnnualAvgTmin = remember(pastCompletedYears) {
+        pastCompletedYears.values.map { it.avgTmin }.average().takeIf { !it.isNaN() } ?: 7.0
+    }
+    val histAnnualPrcp = remember(pastCompletedYears) {
+        pastCompletedYears.values.map { it.totalPrcp }.average().takeIf { !it.isNaN() } ?: 850.0
+    }
+
+    // Podaci za ovu godinu
+    val thisYearStat = yearlyStats[currentYear]
+    val thisYearAvgTemp = thisYearStat?.avgT
+    val thisYearAvgTmax = thisYearStat?.avgTmax
+    val thisYearAvgTmin = thisYearStat?.avgTmin
+    val thisYearPrcp = thisYearStat?.totalPrcp ?: 0.0
+
+    // Istorijski prosjek za isti period u godini (do današnjeg datuma)
+    val samePeriodPastAvg = remember(allRecords, currentYear, dayOfYear) {
+        val subset = allRecords.filter {
+            val yr = it.date.take(4).toIntOrNull() ?: 0
+            if (yr in 1990 until currentYear) {
+                try {
+                    LocalDate.parse(it.date).dayOfYear <= dayOfYear
+                } catch (e: Exception) { false }
+            } else false
+        }.mapNotNull { it.tavg }
+        if (subset.isNotEmpty()) subset.average() else histAnnualAvgTemp
+    }
+
+    val deltaAnnual = if (thisYearAvgTemp != null) thisYearAvgTemp - histAnnualAvgTemp else 0.0
+    val isWarmer = deltaAnnual >= 0
+    val deltaColor = if (isWarmer) Color(0xFFD32F2F) else Color(0xFF1976D2)
+
+    val sortedByWarmth = remember(yearlyStats) {
+        yearlyStats.values.sortedByDescending { it.avgT }
+    }
+    val thisYearRank = sortedByWarmth.indexOfFirst { it.year == currentYear } + 1
+    val warmestYear = sortedByWarmth.firstOrNull()
+    val coldestYear = sortedByWarmth.lastOrNull()
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        // Delta card
-        if (thisYearTavg != null) {
-            val delta = thisYearTavg - histTavg
-            val isWarmer = delta >= 0
-            val deltaColor = if (isWarmer) Color(0xFFD32F2F) else Color(0xFF1976D2)
-
+        // Glavna kartica: Godišnje temperaturno odstupanje
+        if (thisYearAvgTemp != null) {
             OutlinedCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
@@ -567,44 +635,58 @@ fun OverviewSection(state: MainUiState.Success, records: List<DailyRecord>) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(52.dp)
+                            .size(54.dp)
                             .clip(CircleShape)
                             .background(deltaColor.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = if (isWarmer) "🔥" else "❄️",
-                            fontSize = 24.sp
+                            fontSize = 26.sp
                         )
                     }
                     Column {
-                        val prefix = if (delta >= 0) "+" else ""
+                        val prefix = if (deltaAnnual >= 0) "+" else ""
                         Text(
-                            text = "$prefix${String.format(Locale.US, "%.1f", delta)}°C u odnosu na prosjek",
+                            text = "$prefix${String.format(java.util.Locale.US, "%.1f", deltaAnnual)}°C odstupanje godišnjeg prosjeka",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = deltaColor
                         )
                         Text(
-                            text = "Ova godina: ${String.format(Locale.US, "%.1f", thisYearTavg)}°C  •  Prosjek (1990-): ${String.format(Locale.US, "%.1f", histTavg)}°C",
+                            text = "Godišnji prosjek $currentYear: ${String.format(java.util.Locale.US, "%.1f", thisYearAvgTemp)}°C • Višegodišnji (1990–): ${String.format(java.util.Locale.US, "%.1f", histAnnualAvgTemp)}°C",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        if (thisYearRank in 1..sortedByWarmth.size) {
+                            Text(
+                                text = "🏆 $thisYearRank. najtoplija godina od 1990. u ${state.selectedCity.name}",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
                 }
             }
         }
 
-        // Metrics Table Card
+        // Tabela poređenja godišnjih parametara
         ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "📊 Poređenje današnjeg datuma",
+                    text = "📊 Poređenje godišnjih klimatskih prosjeka",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Ova godina ($currentYear) u poređenju sa višegodišnjim godišnjim prosjekom (1990–)",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -618,60 +700,145 @@ fun OverviewSection(state: MainUiState.Success, records: List<DailyRecord>) {
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp, vertical = 8.dp)
                     ) {
-                        Text("Parametar", modifier = Modifier.weight(1.3f), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                        Text("Godišnji parametar", modifier = Modifier.weight(1.4f), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                         Text("Ova god.", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                        Text("Prosjek", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                        Text("Ist. Rekord", modifier = Modifier.weight(1.2f), textAlign = TextAlign.End, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                        Text("Prosjek (1990–)", modifier = Modifier.weight(1.1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                        Text("Razlika", modifier = Modifier.weight(0.9f), textAlign = TextAlign.End, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                val allTimeMaxObj = analysis.tmaxComparison?.allTimeMax
-                val allTimeMinObj = analysis.tmaxComparison?.allTimeMin
-                val maxPrcpObj = analysis.maxPrecipitationEver
+                // 1. Prosječna godišnja temperatura
+                AnnualComparisonRow(
+                    label = "Godišnji prosjek T",
+                    current = thisYearAvgTemp?.let { "${String.format(java.util.Locale.US, "%.1f", it)}°" } ?: "--",
+                    average = "${String.format(java.util.Locale.US, "%.1f", histAnnualAvgTemp)}°",
+                    diff = thisYearAvgTemp?.let {
+                        val d = it - histAnnualAvgTemp
+                        (if (d >= 0) "+${String.format(java.util.Locale.US, "%.1f", d)}" else String.format(java.util.Locale.US, "%.1f", d)) + "°"
+                    } ?: "--",
+                    isWarmer = deltaAnnual >= 0
+                )
 
-                ComparisonRow(
-                    label = "Prosječna T",
-                    current = thisYearTavg?.let { "${String.format(Locale.US, "%.1f", it)}°" } ?: "--",
-                    average = "${String.format(Locale.US, "%.1f", histTavg)}°",
-                    record = allTimeMaxObj?.let { "${String.format(Locale.US, "%.1f", it.value)}° ('${it.year % 100})" } ?: "--"
+                // 2. Prosječna maksimalna godišnja
+                AnnualComparisonRow(
+                    label = "Prosječna Max T",
+                    current = thisYearAvgTmax?.let { "${String.format(java.util.Locale.US, "%.1f", it)}°" } ?: "--",
+                    average = "${String.format(java.util.Locale.US, "%.1f", histAnnualAvgTmax)}°",
+                    diff = thisYearAvgTmax?.let {
+                        val d = it - histAnnualAvgTmax
+                        (if (d >= 0) "+${String.format(java.util.Locale.US, "%.1f", d)}" else String.format(java.util.Locale.US, "%.1f", d)) + "°"
+                    } ?: "--",
+                    isWarmer = (thisYearAvgTmax ?: 0.0) >= histAnnualAvgTmax
                 )
-                ComparisonRow(
-                    label = "Maksimalna T",
-                    current = thisYearTmax?.let { "${String.format(Locale.US, "%.1f", it)}°" } ?: "--",
-                    average = "${String.format(Locale.US, "%.1f", allTmax.average().takeIf { !it.isNaN() } ?: 0.0)}°",
-                    record = allTimeMaxObj?.let { "${String.format(Locale.US, "%.1f", it.value)}° ('${it.year % 100})" } ?: "--"
+
+                // 3. Prosječna minimalna godišnja
+                AnnualComparisonRow(
+                    label = "Prosječna Min T",
+                    current = thisYearAvgTmin?.let { "${String.format(java.util.Locale.US, "%.1f", it)}°" } ?: "--",
+                    average = "${String.format(java.util.Locale.US, "%.1f", histAnnualAvgTmin)}°",
+                    diff = thisYearAvgTmin?.let {
+                        val d = it - histAnnualAvgTmin
+                        (if (d >= 0) "+${String.format(java.util.Locale.US, "%.1f", d)}" else String.format(java.util.Locale.US, "%.1f", d)) + "°"
+                    } ?: "--",
+                    isWarmer = (thisYearAvgTmin ?: 0.0) >= histAnnualAvgTmin
                 )
-                ComparisonRow(
-                    label = "Minimalna T",
-                    current = thisYearTmin?.let { "${String.format(Locale.US, "%.1f", it)}°" } ?: "--",
-                    average = "${String.format(Locale.US, "%.1f", allTmin.average().takeIf { !it.isNaN() } ?: 0.0)}°",
-                    record = allTimeMinObj?.let { "${String.format(Locale.US, "%.1f", it.value)}° ('${it.year % 100})" } ?: "--"
+
+                // 4. Padavine
+                AnnualComparisonRow(
+                    label = "Ukupno padavina",
+                    current = "${String.format(java.util.Locale.US, "%.0f", thisYearPrcp)} mm",
+                    average = "${String.format(java.util.Locale.US, "%.0f", histAnnualPrcp)} mm",
+                    diff = "${if (thisYearPrcp >= histAnnualPrcp) "+" else ""}${String.format(java.util.Locale.US, "%.0f", thisYearPrcp - histAnnualPrcp)} mm",
+                    isWarmer = null
                 )
-                ComparisonRow(
-                    label = "Padavine",
-                    current = thisYearPrcp?.let { "${String.format(Locale.US, "%.1f", it)} mm" } ?: "0.0 mm",
-                    average = "${String.format(Locale.US, "%.1f", records.mapNotNull { it.prcp }.average().takeIf { !it.isNaN() } ?: 0.0)} mm",
-                    record = maxPrcpObj?.let { "${String.format(Locale.US, "%.1f", it.value)}mm ('${it.year % 100})" } ?: "--"
+
+                // 5. Do današnjeg datuma (isti period godine)
+                AnnualComparisonRow(
+                    label = "Prosjek do današnjeg dana",
+                    current = thisYearAvgTemp?.let { "${String.format(java.util.Locale.US, "%.1f", it)}°" } ?: "--",
+                    average = "${String.format(java.util.Locale.US, "%.1f", samePeriodPastAvg)}°",
+                    diff = thisYearAvgTemp?.let {
+                        val d = it - samePeriodPastAvg
+                        (if (d >= 0) "+${String.format(java.util.Locale.US, "%.1f", d)}" else String.format(java.util.Locale.US, "%.1f", d)) + "°"
+                    } ?: "--",
+                    isWarmer = (thisYearAvgTemp ?: 0.0) >= samePeriodPastAvg
                 )
+            }
+        }
+
+        // Kartica sa istorijskim godišnjim rekordima
+        OutlinedCard(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    text = "📈 Istorijski ekstremi po godinama (${state.selectedCity.name})",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    warmestYear?.let { wy ->
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFFD32F2F).copy(alpha = 0.08f),
+                            border = BorderStroke(1.dp, Color(0xFFD32F2F).copy(alpha = 0.3f))
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text("Najtoplija godina", style = MaterialTheme.typography.labelSmall, color = Color(0xFFD32F2F), fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("${wy.year}.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+                                Text("Godišnji prosjek: ${String.format(java.util.Locale.US, "%.1f", wy.avgT)}°C", style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                    }
+
+                    coldestYear?.let { cy ->
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFF1976D2).copy(alpha = 0.08f),
+                            border = BorderStroke(1.dp, Color(0xFF1976D2).copy(alpha = 0.3f))
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text("Najhladnija godina", style = MaterialTheme.typography.labelSmall, color = Color(0xFF1976D2), fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("${cy.year}.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+                                Text("Godišnji prosjek: ${String.format(java.util.Locale.US, "%.1f", cy.avgT)}°C", style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun ComparisonRow(label: String, current: String, average: String, record: String) {
+fun AnnualComparisonRow(label: String, current: String, average: String, diff: String, isWarmer: Boolean?) {
+    val diffColor = when (isWarmer) {
+        true -> Color(0xFFD32F2F)
+        false -> Color(0xFF1976D2)
+        null -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, modifier = Modifier.weight(1.3f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+        Text(label, modifier = Modifier.weight(1.4f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
         Text(current, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-        Text(average, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(record, modifier = Modifier.weight(1.2f), textAlign = TextAlign.End, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
+        Text(average, modifier = Modifier.weight(1.1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(diff, modifier = Modifier.weight(0.9f), textAlign = TextAlign.End, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = diffColor)
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 }

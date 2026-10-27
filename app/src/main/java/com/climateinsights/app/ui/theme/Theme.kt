@@ -67,3 +67,10 @@ fun ClimateInsightsTheme(
         content = content
     )
 }
+
+@Composable
+fun PrognozaXTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) = ClimateInsightsTheme(darkTheme = darkTheme, dynamicColor = dynamicColor, content = content)

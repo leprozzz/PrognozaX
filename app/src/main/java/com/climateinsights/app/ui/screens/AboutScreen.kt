@@ -117,7 +117,7 @@ fun AboutScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Baza obuhvata 15 gradova sa višedecenijskom arhivom mjerenja (1990–2026, Sarajevo od 1901), kao i meteorološke podatke uživo i 7-dnevnu vremensku prognozu.",
+            text = "Baza obuhvata 20 gradova u regionu (Bosna i Hercegovina, Srbija, Hrvatska) sa višedecenijskom arhivom mjerenja (1990–2026, Sarajevo od 1901), kao i meteorološke podatke uživo i 7-dnevnu vremensku prognozu.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

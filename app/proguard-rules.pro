@@ -8,8 +8,9 @@
 }
 -keepattributes *Annotation*, Signature, InnerClasses, EnclosingMethod
 
-# Keep OpenCSV beans if used
--keepclassmembers class com.climateinsights.app.data.model.** { *; }
+# Keep OpenCSV beans and models
+-keep class com.climateinsights.app.data.models.** { *; }
+-keepclassmembers class com.climateinsights.app.data.models.** { *; }
 
 # Retain Compose runtime rules
 -keep class androidx.compose.** { *; }

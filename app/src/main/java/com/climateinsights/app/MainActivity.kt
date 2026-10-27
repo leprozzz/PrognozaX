@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.climateinsights.app.ui.theme.ClimateInsightsTheme
+import com.climateinsights.app.ui.theme.PrognozaXTheme
 import com.climateinsights.app.ui.screens.MainScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.climateinsights.app.ui.viewmodels.MainViewModel
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
             val hasCompletedOnboarding by viewModel.hasCompletedOnboarding.collectAsState()
             val useDarkTheme = isDarkTheme ?: isSystemInDarkTheme()
             
-            ClimateInsightsTheme(darkTheme = useDarkTheme) {
+            PrognozaXTheme(darkTheme = useDarkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

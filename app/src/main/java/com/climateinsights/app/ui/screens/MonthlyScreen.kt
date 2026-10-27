@@ -81,8 +81,8 @@ fun MonthlyScreen(viewModel: MainViewModel) {
             var selectedMonth by remember { mutableIntStateOf(state.selectedDate.monthValue) }
 
             val monthNames = listOf(
-                "Januar", "Februar", "Mart", "April", "Maj", "Jun",
-                "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"
+                "januar", "februar", "mart", "april", "maj", "juni",
+                "juli", "avgust", "septembar", "oktobar", "novembar", "decembar"
             )
 
             var showCityPicker by remember { mutableStateOf(false) }
@@ -139,7 +139,7 @@ fun MonthlyScreen(viewModel: MainViewModel) {
                                 FilterChip(
                                     selected = selectedMonth == monthNum,
                                     onClick = { selectedMonth = monthNum },
-                                    label = { Text(monthNames[idx], style = MaterialTheme.typography.labelSmall) }
+                                    label = { Text(monthNames[idx].replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.labelSmall) }
                                 )
                             }
                         }

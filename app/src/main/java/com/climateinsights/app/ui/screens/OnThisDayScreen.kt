@@ -87,6 +87,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import com.climateinsights.app.ui.utils.formatGodina
+import com.climateinsights.app.ui.utils.formatDanMjesec
+import com.climateinsights.app.ui.utils.formatPuniDatum
+import com.climateinsights.app.ui.utils.formatDanSedmiceIDatum
 
 enum class TableSortOrder(val label: String) {
     TMAX_DESC("🔥 Max T"),
@@ -148,8 +151,6 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
             }
         }
         is MainUiState.Success -> {
-            val fullDateFormatter = DateTimeFormatter.ofPattern("d. MMMM yyyy.", Locale("sr", "BA"))
-            val shortDayMonthFormatter = DateTimeFormatter.ofPattern("d. MMMM", Locale("sr", "BA"))
             val recordsForDay = state.analysis?.historicalRecordsForDay ?: emptyList()
             val analysis = state.analysis
 
@@ -219,7 +220,7 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                                 }
                             }
                             Text(
-                                text = "• ${state.selectedDate.format(fullDateFormatter)}",
+                                text = "• ${formatPuniDatum(state.selectedDate)}",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -315,7 +316,7 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                                             modifier = Modifier.size(16.dp)
                                         )
                                         Text(
-                                            text = state.selectedDate.format(fullDateFormatter),
+                                            text = formatPuniDatum(state.selectedDate),
                                             style = MaterialTheme.typography.bodySmall,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -484,7 +485,7 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Zabilježeno na datum: ${state.selectedDate.format(fullDateFormatter)}",
+                                text = "Zabilježeno na datum: ${formatPuniDatum(state.selectedDate)}",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -544,7 +545,7 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                 if (analysis != null && recordsForDay.isNotEmpty()) {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
-                            text = "Klimatski kontekst za ${state.selectedDate.format(shortDayMonthFormatter)}",
+                            text = "Klimatski kontekst za ${formatDanMjesec(state.selectedDate)}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -683,7 +684,7 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "📊 Detaljna tabela svih godina za ${state.selectedDate.format(shortDayMonthFormatter)}",
+                            text = "📊 Detaljna tabela svih godina za ${formatDanMjesec(state.selectedDate)}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -911,7 +912,7 @@ fun ForecastChip(forecast: ForecastDay) {
         ) {
             val date = try {
                 val parsed = LocalDate.parse(forecast.date)
-                parsed.format(DateTimeFormatter.ofPattern("EEE dd", Locale("sr", "BA")))
+                formatDanSedmiceIDatum(parsed)
             } catch (e: Exception) {
                 forecast.date
             }
