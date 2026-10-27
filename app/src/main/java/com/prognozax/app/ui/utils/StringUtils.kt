@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.utils
+package com.prognozax.app.ui.utils
 
 import java.time.LocalDate
 

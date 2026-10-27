@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.screens
+package com.prognozax.app.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -80,16 +80,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.climateinsights.app.data.models.DailyRecord
-import com.climateinsights.app.ui.viewmodels.MainUiState
-import com.climateinsights.app.ui.viewmodels.MainViewModel
+import com.prognozax.app.data.models.DailyRecord
+import com.prognozax.app.ui.viewmodels.MainUiState
+import com.prognozax.app.ui.viewmodels.MainViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Locale
-import com.climateinsights.app.ui.utils.formatGodina
-import com.climateinsights.app.ui.utils.formatDanMjesec
-import com.climateinsights.app.ui.utils.formatPuniDatum
+import com.prognozax.app.ui.utils.formatGodina
+import com.prognozax.app.ui.utils.formatDanMjesec
+import com.prognozax.app.ui.utils.formatPuniDatum
 
 enum class StatsTab(val label: String, val icon: ImageVector) {
     SEASONAL("Klimatski indeksi", Icons.Default.LocalFireDepartment),
@@ -148,7 +148,7 @@ fun StatisticsScreen(viewModel: MainViewModel) {
             val allRecords = state.allHistoricalRecords
 
             if (showCityPicker) {
-                com.climateinsights.app.ui.components.CitySelectionBottomSheet(
+                com.prognozax.app.ui.components.CitySelectionBottomSheet(
                     cities = state.cities,
                     selectedCity = state.selectedCity,
                     onCitySelected = { city -> viewModel.selectCity(city) },

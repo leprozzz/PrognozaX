@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.theme
+package com.prognozax.app.ui.theme
 
 import android.app.Activity
 import android.os.Build

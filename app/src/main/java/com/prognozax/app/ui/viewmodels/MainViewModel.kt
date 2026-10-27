@@ -1,13 +1,13 @@
-package com.climateinsights.app.ui.viewmodels
+package com.prognozax.app.ui.viewmodels
 
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.climateinsights.app.data.models.City
-import com.climateinsights.app.data.models.DailyRecord
-import com.climateinsights.app.data.models.LiveSnapshot
-import com.climateinsights.app.data.repository.WeatherRepository
+import com.prognozax.app.data.models.City
+import com.prognozax.app.data.models.DailyRecord
+import com.prognozax.app.data.models.LiveSnapshot
+import com.prognozax.app.data.repository.WeatherRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

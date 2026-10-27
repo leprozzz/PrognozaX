@@ -1,4 +1,4 @@
-package com.climateinsights.app.data.models
+package com.prognozax.app.data.models
 
 import com.squareup.moshi.JsonClass
 

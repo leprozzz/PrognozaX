@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.climateinsights.app"
+    namespace = "com.prognozax.app"
     compileSdk = 35
 
     defaultConfig {

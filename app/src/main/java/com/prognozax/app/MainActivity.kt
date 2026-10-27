@@ -1,4 +1,4 @@
-package com.climateinsights.app
+package com.prognozax.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.climateinsights.app.ui.theme.PrognozaXTheme
-import com.climateinsights.app.ui.screens.MainScreen
+import com.prognozax.app.ui.theme.PrognozaXTheme
+import com.prognozax.app.ui.screens.MainScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.climateinsights.app.ui.viewmodels.MainViewModel
+import com.prognozax.app.ui.viewmodels.MainViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -21,7 +21,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.tween
-import com.climateinsights.app.ui.screens.WelcomeScreen
+import com.prognozax.app.ui.screens.WelcomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

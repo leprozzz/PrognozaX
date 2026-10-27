@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.screens
+package com.prognozax.app.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -62,11 +62,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.climateinsights.app.data.models.City
-import com.climateinsights.app.ui.components.CitySelectionBottomSheet
-import com.climateinsights.app.ui.components.CitySelectorCard
-import com.climateinsights.app.ui.viewmodels.MainUiState
-import com.climateinsights.app.ui.viewmodels.MainViewModel
+import com.prognozax.app.data.models.City
+import com.prognozax.app.ui.components.CitySelectionBottomSheet
+import com.prognozax.app.ui.components.CitySelectorCard
+import com.prognozax.app.ui.viewmodels.MainUiState
+import com.prognozax.app.ui.viewmodels.MainViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

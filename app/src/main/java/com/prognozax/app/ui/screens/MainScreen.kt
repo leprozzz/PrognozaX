@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.screens
+package com.prognozax.app.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,13 +23,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.climateinsights.app.ui.navigation.About
-import com.climateinsights.app.ui.navigation.Monthly
-import com.climateinsights.app.ui.navigation.OnThisDay
-import com.climateinsights.app.ui.navigation.Settings
-import com.climateinsights.app.ui.navigation.Statistics
-import com.climateinsights.app.ui.navigation.topLevelRoutes
-import com.climateinsights.app.ui.viewmodels.MainViewModel
+import com.prognozax.app.ui.navigation.About
+import com.prognozax.app.ui.navigation.Monthly
+import com.prognozax.app.ui.navigation.OnThisDay
+import com.prognozax.app.ui.navigation.Settings
+import com.prognozax.app.ui.navigation.Statistics
+import com.prognozax.app.ui.navigation.topLevelRoutes
+import com.prognozax.app.ui.viewmodels.MainViewModel
 
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {

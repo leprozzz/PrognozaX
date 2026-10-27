@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.screens
+package com.prognozax.app.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.navigation
+package com.prognozax.app.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth

@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.screens
+package com.prognozax.app.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,8 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.climateinsights.app.ui.viewmodels.MainUiState
-import com.climateinsights.app.ui.viewmodels.MainViewModel
+import com.prognozax.app.ui.viewmodels.MainUiState
+import com.prognozax.app.ui.viewmodels.MainViewModel
 
 @Composable
 fun SettingsScreen(viewModel: MainViewModel) {

@@ -1,13 +1,13 @@
-package com.climateinsights.app.data.repository
+package com.prognozax.app.data.repository
 
 import android.content.Context
 import android.util.Log
-import com.climateinsights.app.data.api.OpenMeteoApi
-import com.climateinsights.app.data.api.OpenMeteoArchiveResponse
-import com.climateinsights.app.data.models.City
-import com.climateinsights.app.data.models.DailyRecord
-import com.climateinsights.app.data.models.ForecastDay
-import com.climateinsights.app.data.models.LiveSnapshot
+import com.prognozax.app.data.api.OpenMeteoApi
+import com.prognozax.app.data.api.OpenMeteoArchiveResponse
+import com.prognozax.app.data.models.City
+import com.prognozax.app.data.models.DailyRecord
+import com.prognozax.app.data.models.ForecastDay
+import com.prognozax.app.data.models.LiveSnapshot
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -217,7 +217,7 @@ class WeatherRepository(private val context: Context) {
         } ?: emptyList()
 
         // 2. Fetch ERA5 as fallback
-        var era5Daily: com.climateinsights.app.data.api.OpenMeteoArchiveDaily? = null
+        var era5Daily: com.prognozax.app.data.api.OpenMeteoArchiveDaily? = null
         try {
             val archiveResponse = api.getArchive(
                 latitude = city.latitude,

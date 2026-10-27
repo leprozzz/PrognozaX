@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.components
+package com.prognozax.app.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -49,7 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.climateinsights.app.data.models.City
+import com.prognozax.app.data.models.City
 
 /**
  * Reusable M3 Modal Bottom Sheet for selecting a city.

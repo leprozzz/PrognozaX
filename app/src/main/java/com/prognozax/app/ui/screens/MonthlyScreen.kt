@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.screens
+package com.prognozax.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,12 +51,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.climateinsights.app.data.models.DailyRecord
-import com.climateinsights.app.ui.components.CitySelectionBottomSheet
-import com.climateinsights.app.ui.components.CitySelectorCard
-import com.climateinsights.app.ui.utils.formatGodina
-import com.climateinsights.app.ui.viewmodels.MainUiState
-import com.climateinsights.app.ui.viewmodels.MainViewModel
+import com.prognozax.app.data.models.DailyRecord
+import com.prognozax.app.ui.components.CitySelectionBottomSheet
+import com.prognozax.app.ui.components.CitySelectorCard
+import com.prognozax.app.ui.utils.formatGodina
+import com.prognozax.app.ui.viewmodels.MainUiState
+import com.prognozax.app.ui.viewmodels.MainViewModel
 import java.time.LocalDate
 import java.util.Locale
 

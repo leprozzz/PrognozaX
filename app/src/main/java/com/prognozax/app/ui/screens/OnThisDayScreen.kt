@@ -1,4 +1,4 @@
-package com.climateinsights.app.ui.screens
+package com.prognozax.app.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -74,22 +74,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.climateinsights.app.data.models.DailyRecord
-import com.climateinsights.app.data.models.ForecastDay
-import com.climateinsights.app.ui.viewmodels.MainUiState
+import com.prognozax.app.data.models.DailyRecord
+import com.prognozax.app.data.models.ForecastDay
+import com.prognozax.app.ui.viewmodels.MainUiState
 import androidx.compose.material.icons.filled.ArrowDropDown
-import com.climateinsights.app.ui.components.CitySelectionBottomSheet
-import com.climateinsights.app.ui.components.CitySelectorCard
-import com.climateinsights.app.ui.viewmodels.MainViewModel
+import com.prognozax.app.ui.components.CitySelectionBottomSheet
+import com.prognozax.app.ui.components.CitySelectorCard
+import com.prognozax.app.ui.viewmodels.MainViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import com.climateinsights.app.ui.utils.formatGodina
-import com.climateinsights.app.ui.utils.formatDanMjesec
-import com.climateinsights.app.ui.utils.formatPuniDatum
-import com.climateinsights.app.ui.utils.formatDanSedmiceIDatum
+import com.prognozax.app.ui.utils.formatGodina
+import com.prognozax.app.ui.utils.formatDanMjesec
+import com.prognozax.app.ui.utils.formatPuniDatum
+import com.prognozax.app.ui.utils.formatDanSedmiceIDatum
 
 enum class TableSortOrder(val label: String) {
     TMAX_DESC("🔥 Max T"),
