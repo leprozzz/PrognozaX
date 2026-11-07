@@ -31,5 +31,5 @@ val topLevelRoutes = listOf(
     TopLevelRoute("Mjesečno", Monthly, Icons.Default.CalendarMonth),
     TopLevelRoute("Statistika", Statistics, Icons.Default.Timeline),
     TopLevelRoute("Postavke", Settings, Icons.Default.Settings),
-    TopLevelRoute("O aplikaciji", About, Icons.Default.Info)
+    TopLevelRoute("Info", About, Icons.Default.Info)
 )

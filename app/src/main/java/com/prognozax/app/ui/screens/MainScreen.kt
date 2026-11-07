@@ -44,7 +44,14 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 topLevelRoutes.forEach { topLevelRoute ->
                     NavigationBarItem(
                         icon = { Icon(topLevelRoute.icon, contentDescription = topLevelRoute.name) },
-                        label = { Text(topLevelRoute.name) },
+                        label = { 
+                            Text(
+                                text = topLevelRoute.name,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            ) 
+                        },
                         selected = currentDestination?.hierarchy?.any { 
                             it.route?.endsWith(topLevelRoute.route.javaClass.simpleName) == true 
                         } == true,
