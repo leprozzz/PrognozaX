@@ -32,6 +32,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AboutScreen() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val versionName = androidx.compose.runtime.remember {
+        try {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "1.0.4"
+        } catch (e: Exception) {
+            "1.0.4"
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,7 +68,7 @@ fun AboutScreen() {
                     )
                 }
                 Text(
-                    text = "PrognozaX v1.0.0",
+                    text = "PrognozaX v$versionName",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -93,7 +102,7 @@ fun AboutScreen() {
         FeatureRow(
             icon = Icons.Default.History,
             title = "Istorijski prosjek na današnji dan",
-            description = "Proračun temperaturnog odstupanja (anomalije) u odnosu na 1980–2024."
+            description = "Proračun temperaturnog odstupanja (anomalije) u odnosu na višegodišnji prosjek (1990–danas)."
         )
 
         FeatureRow(

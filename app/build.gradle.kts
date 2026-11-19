@@ -13,8 +13,8 @@ android {
         applicationId = "com.prognozax.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 5
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -83,10 +83,10 @@ dependencies {
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.moshi)
     
-    implementation(libs.opencsv)
-
-    implementation(libs.vico.compose.m3)
-    implementation(libs.vico.core)
+    // Unused dependencies commented out for smaller APK/AAB and better R8 optimization
+    // implementation(libs.opencsv)
+    // implementation(libs.vico.compose.m3)
+    // implementation(libs.vico.core)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

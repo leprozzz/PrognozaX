@@ -408,8 +408,12 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                                     text = "Trenutne vremenske prilike",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.weight(1f),
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                 )
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Surface(
                                     color = MaterialTheme.colorScheme.primary,
                                     shape = RoundedCornerShape(8.dp)
@@ -419,6 +423,9 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onPrimary,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                                     )
                                 }
@@ -767,7 +774,9 @@ fun OnThisDayScreen(viewModel: MainViewModel) {
 
                                     Surface(
                                         onClick = {
-                                            viewModel.selectDate(state.selectedDate.withYear(year))
+                                            if (year > 0) {
+                                                viewModel.selectDate(state.selectedDate.withYear(year))
+                                            }
                                         },
                                         shape = RoundedCornerShape(8.dp),
                                         color = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f) else Color.Transparent,

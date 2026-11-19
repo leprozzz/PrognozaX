@@ -71,7 +71,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
     val hasCompletedOnboarding: StateFlow<Boolean> = _hasCompletedOnboarding.asStateFlow()
 
-    private val _isDarkTheme = MutableStateFlow<Boolean?>(null)
+    private val _isDarkTheme = MutableStateFlow<Boolean?>(
+        when (prefs.getString("theme_mode", "system")) {
+            "dark" -> true
+            "light" -> false
+            else -> null
+        }
+    )
     val isDarkTheme: StateFlow<Boolean?> = _isDarkTheme.asStateFlow()
 
     private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
@@ -129,6 +135,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setDarkTheme(isDark: Boolean?) {
+        val mode = when (isDark) {
+            true -> "dark"
+            false -> "light"
+            null -> "system"
+        }
+        prefs.edit().putString("theme_mode", mode).apply()
         _isDarkTheme.value = isDark
     }
 
@@ -169,7 +181,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.value = MainUiState.Loading
         try {
             val isToday = selectedDate == LocalDate.now()
-            
+            if (liveSnapshot?.cityId != city.id) {
+                liveSnapshot = null
+            }
+
             if (isToday) {
                 try {
                     liveSnapshot = repository.getLiveSnapshot(city.id)

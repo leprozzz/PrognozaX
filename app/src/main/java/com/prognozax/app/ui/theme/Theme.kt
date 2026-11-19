@@ -53,8 +53,9 @@ fun ClimateInsightsTheme(
             while (context is android.content.ContextWrapper) {
                 if (context is Activity) {
                     val window = context.window
-                    window.statusBarColor = Color.Transparent.toArgb()
-                    WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+                    val insetsController = WindowCompat.getInsetsController(window, view)
+                    insetsController.isAppearanceLightStatusBars = !darkTheme
+                    insetsController.isAppearanceLightNavigationBars = !darkTheme
                     break
                 }
                 context = context.baseContext

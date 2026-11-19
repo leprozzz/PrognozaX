@@ -14,13 +14,13 @@
 }
 -keep class com.prognozax.app.ui.navigation.** { *; }
 
-# Data models & API
--keep class com.prognozax.app.data.models.** { *; }
+# Keep reflection-based Moshi models and Retrofit API interface annotations
 -keepclassmembers class com.prognozax.app.data.models.** { *; }
--keep class com.prognozax.app.data.api.** { *; }
+-keep class com.prognozax.app.data.models.** { *; }
 -keepclassmembers class com.prognozax.app.data.api.** { *; }
+-keep class com.prognozax.app.data.api.** { *; }
 
-# Moshi
+# Moshi reflection & JsonClass support
 -keepclassmembers class * {
     @com.squareup.moshi.Json <fields>;
 }
@@ -31,22 +31,8 @@
     @com.squareup.moshi.JsonClass <fields>;
 }
 
-# Retrofit
+# Retrofit (uses its own consumer rules; keep service interface annotations only)
 -keepclassmembers,allowshrinking,allowobfuscation interface * {
     @retrofit2.http.* <methods>;
 }
 -dontwarn retrofit2.**
--keep class retrofit2.** { *; }
-
-# OpenCSV
--keep class com.opencsv.** { *; }
--dontwarn com.opencsv.**
--dontwarn org.apache.commons.beanutils.**
--dontwarn org.apache.commons.collections.**
-
-# Compose
--keep class androidx.compose.** { *; }
-
-# Vico Charts
--keep class com.patrykandpatrick.vico.** { *; }
--dontwarn com.patrykandpatrick.vico.**

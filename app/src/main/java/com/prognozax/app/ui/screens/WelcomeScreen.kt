@@ -179,7 +179,7 @@ fun WelcomeScreen(
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Text(
-                            text = "Pregled 36 godina istorije vremenskih prilika i klimatskih promijena",
+                            text = "Pregled 36 godina istorije vremenskih prilika i klimatskih promjena",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,

@@ -521,10 +521,10 @@ fun RecordHighlightCard(
         color = color.copy(alpha = 0.08f)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = title, style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Bold)
+            Text(text = title, style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Bold, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = color)
-            Text(text = sub, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = color, maxLines = 1, softWrap = false)
+            Text(text = sub, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, softWrap = false)
         }
     }
 }
@@ -548,11 +548,11 @@ fun OverviewSection(state: MainUiState.Success, allRecords: List<DailyRecord>) {
     val currentYear = state.selectedDate.year
     val dayOfYear = state.selectedDate.dayOfYear
 
-    // 1. Agregacija za svaku godinu
+    // 1. Agregacija za svaku godinu (podržava sve istorijske godine od 1900+ i buduće godine)
     val yearlyStats = remember(allRecords) {
         allRecords
             .groupBy { it.date.take(4).toIntOrNull() ?: 0 }
-            .filter { (yr, list) -> yr in 1990..2026 && list.any { it.tavg != null } }
+            .filter { (yr, list) -> yr >= 1900 && list.any { it.tavg != null } }
             .mapValues { (yr, list) ->
                 val tavgList = list.mapNotNull { it.tavg }
                 val tmaxList = list.mapNotNull { it.tmax }
@@ -569,6 +569,10 @@ fun OverviewSection(state: MainUiState.Success, allRecords: List<DailyRecord>) {
                     count = tavgList.size
                 )
             }
+    }
+
+    val earliestYear = remember(yearlyStats) {
+        yearlyStats.keys.minOrNull() ?: 1990
     }
 
     // Istorijske kompletne godine (prethodne godine pre ove)
@@ -601,7 +605,7 @@ fun OverviewSection(state: MainUiState.Success, allRecords: List<DailyRecord>) {
     val samePeriodPastAvg = remember(allRecords, currentYear, dayOfYear) {
         val subset = allRecords.filter {
             val yr = it.date.take(4).toIntOrNull() ?: 0
-            if (yr in 1990 until currentYear) {
+            if (yr in 1900 until currentYear) {
                 try {
                     LocalDate.parse(it.date).dayOfYear <= dayOfYear
                 } catch (e: Exception) { false }
@@ -654,13 +658,13 @@ fun OverviewSection(state: MainUiState.Success, allRecords: List<DailyRecord>) {
                             color = deltaColor
                         )
                         Text(
-                            text = "Godišnji prosjek $currentYear: ${String.format(java.util.Locale.US, "%.1f", thisYearAvgTemp)}°C • Višegodišnji (1990–): ${String.format(java.util.Locale.US, "%.1f", histAnnualAvgTemp)}°C",
+                            text = "Godišnji prosjek $currentYear: ${String.format(java.util.Locale.US, "%.1f", thisYearAvgTemp)}°C • Višegodišnji ($earliestYear–): ${String.format(java.util.Locale.US, "%.1f", histAnnualAvgTemp)}°C",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         if (thisYearRank in 1..sortedByWarmth.size) {
                             Text(
-                                text = "🏆 $thisYearRank. najtoplija godina od 1990. u ${state.selectedCity.name}",
+                                text = "🏆 $thisYearRank. najtoplija godina od $earliestYear. u ${state.selectedCity.name}",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
@@ -684,7 +688,7 @@ fun OverviewSection(state: MainUiState.Success, allRecords: List<DailyRecord>) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Ova godina ($currentYear) u poređenju sa višegodišnjim godišnjim prosjekom (1990–)",
+                    text = "Ova godina ($currentYear) u poređenju sa višegodišnjim godišnjim prosjekom ($earliestYear–)",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -700,10 +704,10 @@ fun OverviewSection(state: MainUiState.Success, allRecords: List<DailyRecord>) {
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp, vertical = 8.dp)
                     ) {
-                        Text("Godišnji parametar", modifier = Modifier.weight(1.4f), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                        Text("Ova god.", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                        Text("Prosjek (1990–)", modifier = Modifier.weight(1.1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                        Text("Razlika", modifier = Modifier.weight(0.9f), textAlign = TextAlign.End, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                        Text("Parametar", modifier = Modifier.weight(1.4f), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+                        Text("Ova god.", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+                        Text("Prosjek", modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+                        Text("Razlika", modifier = Modifier.weight(1f), textAlign = TextAlign.End, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
                     }
                 }
 
@@ -836,9 +840,9 @@ fun AnnualComparisonRow(label: String, current: String, average: String, diff: S
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(label, modifier = Modifier.weight(1.4f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-        Text(current, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-        Text(average, modifier = Modifier.weight(1.1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(diff, modifier = Modifier.weight(0.9f), textAlign = TextAlign.End, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = diffColor)
+        Text(current, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, maxLines = 1, softWrap = false)
+        Text(average, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, softWrap = false)
+        Text(diff, modifier = Modifier.weight(1f), textAlign = TextAlign.End, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = diffColor, maxLines = 1, softWrap = false)
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 }
@@ -950,18 +954,22 @@ fun ExtremesTablesSection(records: List<DailyRecord>) {
 // -------------------------------------------------------------------------------------------------
 @Composable
 fun DecadesSection(records: List<DailyRecord>) {
-    val decades = listOf(1990, 2000, 2010, 2020)
-    val decadeStats = decades.map { decadeStart ->
-        val decadeRecords = records.filter {
-            val y = it.date.take(4).toIntOrNull() ?: 0
-            y in decadeStart..(decadeStart + 9)
-        }
-        val avg = decadeRecords.mapNotNull { it.tavg }.average().takeIf { !it.isNaN() }
-        val max = decadeRecords.mapNotNull { it.tmax }.maxOrNull()
-        val min = decadeRecords.mapNotNull { it.tmin }.minOrNull()
-        val prcpAvg = decadeRecords.mapNotNull { it.prcp }.average().takeIf { !it.isNaN() }
-        DecadeStat(decadeStart, avg, max, min, prcpAvg, decadeRecords.size)
-    }.filter { it.sampleCount > 0 }
+    val decadeStats = remember(records) {
+        val years = records.mapNotNull { it.date.take(4).toIntOrNull() }.filter { it >= 1900 }
+        val minDecade = ((years.minOrNull() ?: 1990) / 10) * 10
+        val maxDecade = ((years.maxOrNull() ?: 2020) / 10) * 10
+        (minDecade..maxDecade step 10).map { decadeStart ->
+            val decadeRecords = records.filter {
+                val y = it.date.take(4).toIntOrNull() ?: 0
+                y in decadeStart..(decadeStart + 9)
+            }
+            val avg = decadeRecords.mapNotNull { it.tavg }.average().takeIf { !it.isNaN() }
+            val max = decadeRecords.mapNotNull { it.tmax }.maxOrNull()
+            val min = decadeRecords.mapNotNull { it.tmin }.minOrNull()
+            val prcpAvg = decadeRecords.mapNotNull { it.prcp }.average().takeIf { !it.isNaN() }
+            DecadeStat(decadeStart, avg, max, min, prcpAvg, decadeRecords.size)
+        }.filter { it.sampleCount > 0 }.sortedByDescending { it.startYear }
+    }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
